@@ -6,7 +6,7 @@ from datetime import date, time
 def test_reservation_crud(auth_client, create_user):
     # Préparation : créer un jour, une période et un étudiant
     etu = Etudiant.objects.create_user(email="e2@emig.ne", password="pass", nom="Nom", prenom="Pre")
-    jour = Jour.objects.create(idJour=1, nomJour="Lundi")
+    jour = Jour.objects.create(nomJour="Lundi")
     periode = Periode.objects.create(idPeriode=1, nomPeriode="Petit-déj")
 
     # Create

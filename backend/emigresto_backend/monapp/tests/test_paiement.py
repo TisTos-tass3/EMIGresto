@@ -5,7 +5,7 @@ from monapp.models import Paiement, Etudiant
 def test_paiement_crud(auth_client, create_user):
     etu = create_user(email="t4@emig.ne")
     # Recharge solde
-    resp = auth_client.post("/api/paiements/", {"montant": 500, "modePaiement": "solde"})
+    resp = auth_client.post("/api/paiements/", {"montant": 500, "mode_Paiement": "solde"})
     assert resp.status_code == 201
     pid = resp.data["idPaiement"]
     assert resp.data["montant"] == 500

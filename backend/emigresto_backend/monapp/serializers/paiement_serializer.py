@@ -9,5 +9,5 @@ class PaiementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Paiement
-        fields = ['idPaiement', 'date', 'montant', 'modePaiement', 'etudiant', 'transaction']
+        fields = ['idPaiement', 'date', 'montant', 'mode_paiement', 'etudiant', 'transaction']
         read_only_fields = ['idPaiement', 'date', 'etudiant', 'transaction']

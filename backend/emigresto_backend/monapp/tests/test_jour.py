@@ -4,7 +4,7 @@ from monapp.models.jour import Jour
 @pytest.mark.django_db
 def test_jour_crud(auth_client):
     # Create
-    data = {"idJour":1, "nomJour": "Lundi"}
+    data = {"nomJour": "Lundi"}
     resp = auth_client.post("/api/jours/", data)
     assert resp.status_code == 201
     jid = resp.data["idJour"]
