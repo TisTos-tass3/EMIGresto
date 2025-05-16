@@ -10,3 +10,7 @@ class Transaction(models.Model):
 
     def enregistrer(self):
         self.save()
+        
+    class Meta:
+        db_table = 'transaction'
+

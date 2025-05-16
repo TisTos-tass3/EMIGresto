@@ -9,5 +9,5 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ['idTicket', 'etudiant', 'typeTicket', 'prix', 'dateVente', 'qr_code']
-        read_only_fields = ['idTicket', 'etudiant', 'prix', 'dateVente', 'qr_code']
+        fields = ['id', 'etudiant', 'type_ticket', 'prix', 'date_vente', 'qr_code']
+        read_only_fields = ['id', 'etudiant', 'prix', 'date_vente', 'qr_code']

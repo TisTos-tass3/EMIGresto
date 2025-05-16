@@ -3,6 +3,7 @@ from .utilisateur import Utilisateur
 
 class Etudiant(Utilisateur):
     matricule = models.CharField(max_length=20, unique=True)
+    telephone = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         verbose_name = "Étudiant"
@@ -25,7 +26,7 @@ class Etudiant(Utilisateur):
 
     @property
     def get_fullName(self):
-        return f"{self.nomEtudiant} {self.prenomEtudiant}"
+        return f"{self.nom} {self.prenom}"
     
     # Improve reservation check method
     def existe_reserv_pour_periode_date(self, periode, date=None):

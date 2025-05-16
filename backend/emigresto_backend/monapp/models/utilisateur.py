@@ -49,6 +49,8 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
+        db_table = 'utilisateur'
+
 
     def __str__(self):
         return f"{self.nom} {self.prenom} ({self.email})"

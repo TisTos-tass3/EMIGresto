@@ -6,13 +6,13 @@ from datetime import date, time
 def test_reservation_crud(auth_client, create_user):
     # Préparation : créer un jour, une période et un étudiant
     etu = Etudiant.objects.create_user(email="e2@emig.ne", password="pass", nom="Nom", prenom="Pre")
-    jour = Jour.objects.create(nomJour="Lundi")
-    periode = Periode.objects.create(idPeriode=1, nomPeriode="Petit-déj")
+    jour = Jour.objects.create(id=8, nomJour="Lundi")
+    periode = Periode.objects.create(id=1, nomPeriode="Petit-déj")
 
     # Create
     data = {
-        "jour": jour.idJour,
-        "periode": periode.idPeriode,
+        "jour": jour.id,
+        "periode": periode.id,
         "date": date.today().isoformat(),
         "heure": time(8, 0).isoformat(),
         # l'étudiant par défaut depuis le fixture auth_client
@@ -36,3 +36,4 @@ def test_reservation_crud(auth_client, create_user):
     resp4 = auth_client.delete(f"/api/reservations/{rid}/")
     assert resp4.status_code == 204
     assert not Reservation.objects.filter(pk=rid).exists()
+

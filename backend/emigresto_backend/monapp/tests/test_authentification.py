@@ -73,3 +73,4 @@ def test_logout_user(client, user_data):
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
     response = client.post(reverse('auth-logout'), {"refresh": refresh}, format="json")
     assert response.status_code == status.HTTP_205_RESET_CONTENT
+

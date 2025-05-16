@@ -4,5 +4,5 @@ from ..models.periode import Periode
 class PeriodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Periode
-        fields = ['idPeriode', 'nomPeriode']
-        read_only_fields = ['idPeriode', 'nomPeriode']
+        fields = ['id', 'nomPeriode']
+        read_only_fields = ['id', 'nomPeriode']

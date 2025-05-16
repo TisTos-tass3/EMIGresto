@@ -15,6 +15,10 @@ class Administrateur(PersonnelRestaurant):
 
     def generer_rapports(self):
         pass
+    
+    class Meta:
+        db_table = 'administrateur'
+
 
 
 class ChefServiceRestaurant(PersonnelRestaurant):
@@ -26,6 +30,10 @@ class ChefServiceRestaurant(PersonnelRestaurant):
 
     def creer_repas(self):
         pass
+    
+    class Meta:
+        db_table = 'chefServiceRestaurant'
+
 
 
 class Magasinier(PersonnelRestaurant):
@@ -37,6 +45,10 @@ class Magasinier(PersonnelRestaurant):
 
     def recevoir_commande(self):
         pass
+    
+    class Meta:
+        db_table = 'magasinier'
+
 
 
 class VendeurTicket(PersonnelRestaurant):
@@ -48,6 +60,10 @@ class VendeurTicket(PersonnelRestaurant):
 
     def enregistrer_vente(self):
         pass
+    
+    class Meta:
+        db_table = 'vendeurTicket'
+
 
 
 class ResponsableGuichet(PersonnelRestaurant):
@@ -56,3 +72,7 @@ class ResponsableGuichet(PersonnelRestaurant):
 
     def valider_acces_repas(self):
         pass
+    
+    class Meta:
+        db_table = 'responsableGuichet'
+

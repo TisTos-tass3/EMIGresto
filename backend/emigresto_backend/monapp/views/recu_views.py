@@ -5,5 +5,5 @@ from .base_viewset import BaseModelViewSet
 class RecuTicketViewSet(BaseModelViewSet):
     queryset = RecuTicket.objects.all()
     serializer_class = RecuTicketSerializer
-    ordering_fields = ['dateEmission']
+    ordering_fields = ['date_emission']
 

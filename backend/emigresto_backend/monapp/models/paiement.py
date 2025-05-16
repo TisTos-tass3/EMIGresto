@@ -4,7 +4,7 @@ from .etudiant import Etudiant
 
 class Paiement(models.Model):
     MODES = [('CASH','Espèces'),('SOLDE','Solde')]
-    idPaiement   = models.AutoField(db_column='idPaiement', primary_key=True)  # Field name made lowercase.
+    id           = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
     etudiant     = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
     date         = models.DateTimeField(default=timezone.now)
     montant      = models.DecimalField(max_digits=8, decimal_places=2)
@@ -13,3 +13,7 @@ class Paiement(models.Model):
     def effectuer_paiement(self):
         # log, webhook, intégration bancaires…
         return True
+    
+    class Meta:
+        db_table = 'paiement'
+

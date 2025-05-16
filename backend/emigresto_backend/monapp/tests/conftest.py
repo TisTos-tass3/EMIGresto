@@ -58,20 +58,18 @@ def auth_client(client, create_user):
 
 @pytest.fixture(autouse=True)
 def setup_jours_periodes(db):
+    """
+    Avant chaque test, on (re)crée les données Jour et Periode de base.
+    """
     from monapp.models import Jour, Periode
 
-    # 1) Vider les tables
     Jour.objects.all().delete()
     Periode.objects.all().delete()
 
-    # 2) Remettre les séquences PostgreSQL à 1
-    #    Attention : tes séquences s'appellent probablement "jour_idJour_seq" et "periode_idPeriode_seq"
-    with connection.cursor() as c:
-        c.execute('ALTER SEQUENCE "jour_idJour_seq" RESTART WITH 1;')
-        c.execute('ALTER SEQUENCE "periode_idPeriode_seq" RESTART WITH 1;')
-
-    # 3) Réinsérer
+    # 3 jours
     for name in ["Lundi", "Mardi", "Mercredi"]:
         Jour.objects.create(nomJour=name)
+
+    # 3 périodes
     for name in ["PetitDéj", "Déjeuner", "Dîner"]:
         Periode.objects.create(nomPeriode=name)

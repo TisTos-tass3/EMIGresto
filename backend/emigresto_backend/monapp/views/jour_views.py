@@ -7,4 +7,4 @@ class JourViewSet(BaseModelViewSet):
     queryset = Jour.objects.all()
     serializer_class = JourSerializer
     search_fields = ['nomJour']
-    ordering_fields = ['idJour']
+    ordering_fields = ['id']

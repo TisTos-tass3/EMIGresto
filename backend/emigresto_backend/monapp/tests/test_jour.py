@@ -7,12 +7,12 @@ def test_jour_crud(auth_client):
     data = {"nomJour": "Lundi"}
     resp = auth_client.post("/api/jours/", data)
     assert resp.status_code == 201
-    jid = resp.data["idJour"]
+    jid = resp.data["id"]
 
     # List
     resp_list = auth_client.get("/api/jours/")
     assert resp_list.status_code == 200
-    assert any(j["idJour"] == jid for j in resp_list.data["results"])
+    assert any(j["id"] == jid for j in resp_list.data["results"])
 
     # Detail
     resp2 = auth_client.get(f"/api/jours/{jid}/")
@@ -30,3 +30,4 @@ def test_jour_crud(auth_client):
     resp4 = auth_client.delete(f"/api/jours/{jid}/")
     assert resp4.status_code == 204
     assert not Jour.objects.filter(pk=jid).exists()
+

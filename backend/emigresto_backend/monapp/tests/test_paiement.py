@@ -5,9 +5,9 @@ from monapp.models import Paiement, Etudiant
 def test_paiement_crud(auth_client, create_user):
     etu = create_user(email="t4@emig.ne")
     # Recharge solde
-    resp = auth_client.post("/api/paiements/", {"montant": 500, "mode_Paiement": "solde"})
+    resp = auth_client.post("/api/paiements/", {"montant": 500, "mode_paiement": "solde"})
     assert resp.status_code == 201
-    pid = resp.data["idPaiement"]
+    pid = resp.data["id"]
     assert resp.data["montant"] == 500
 
     # Detail
@@ -18,3 +18,4 @@ def test_paiement_crud(auth_client, create_user):
     resp3 = auth_client.delete(f"/api/paiements/{pid}/")
     assert resp3.status_code == 204
     assert not Paiement.objects.filter(pk=pid).exists()
+

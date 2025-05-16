@@ -9,3 +9,7 @@ class Authentification(models.Model):
 
     def __str__(self):
         return f"Session de {self.utilisateur.nom}"
+    
+    class Meta:
+        db_table = 'authentification'
+

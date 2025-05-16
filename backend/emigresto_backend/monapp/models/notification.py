@@ -9,4 +9,8 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification à {self.utilisateur.nom}"
+    
+    class Meta:
+        db_table = 'notification'
+
 

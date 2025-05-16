@@ -9,5 +9,5 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        fields = ['idTransaction', 'date', 'montant', 'ticket', 'recu']
-        read_only_fields = ['idTransaction', 'date', 'montant', 'ticket', 'recu']
+        fields = ['id', 'date', 'montant', 'ticket', 'recu']
+        read_only_fields = ['id', 'date', 'montant', 'ticket', 'recu']

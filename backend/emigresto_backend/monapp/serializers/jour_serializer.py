@@ -10,7 +10,7 @@ class JourSerializer(serializers.ModelSerializer):
     class Meta:
         model = Jour
         fields = [
-            'idJour', 
+            'id', 
             'nomJour',
             'total_reservations',
             'reservations_petit_dej',

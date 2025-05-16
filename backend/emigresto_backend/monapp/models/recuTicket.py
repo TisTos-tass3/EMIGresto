@@ -9,4 +9,8 @@ class RecuTicket(models.Model):
 
     def __str__(self):
         return f"Reçu de tickets {self.id}"
+    
+    class Meta:
+        db_table = 'recuTicket'
+
 

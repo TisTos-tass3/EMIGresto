@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 class Jour(models.Model):
-    idJour   = models.AutoField(primary_key=True, db_column='idJour')
+    id   = models.AutoField(primary_key=True, db_column='id')
     nomJour = models.CharField(db_column='nomJour', max_length=10)  # Field name made lowercase.
 
     @property
