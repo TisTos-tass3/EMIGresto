@@ -23,6 +23,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     mot_de_passe = models.CharField(max_length=128)
+    telephone = models.CharField(max_length=20, blank=True, null=True)
     role = models.CharField(
         max_length=30,
         choices=[

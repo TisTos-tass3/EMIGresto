@@ -11,8 +11,26 @@ class Paiement(models.Model):
     mode_paiement= models.CharField(max_length=6, choices=MODES)
 
     def effectuer_paiement(self):
-        # log, webhook, intégration bancaires…
+        """
+        - CASH  → crédite le compte étudiant.
+        - SOLDE → débite le compte étudiant.
+        """
+        if self.mode_paiement.upper() == 'CASH':
+            # on crédite
+            self.etudiant.crediter(self.montant)
+        else:
+            # SOLDE → on débite
+            self.etudiant.debiter(self.montant)
         return True
+
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        # Si c'est un nouvel enregistrement, on applique la logique
+        if is_new:
+            self.effectuer_paiement()
+
     
     class Meta:
         db_table = 'paiement'

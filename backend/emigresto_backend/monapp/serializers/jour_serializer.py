@@ -1,32 +1,38 @@
+# monapp/serializers/jour_serializer.py
 from rest_framework import serializers
 from ..models.jour import Jour
 
 class JourSerializer(serializers.ModelSerializer):
-    total_reservations = serializers.SerializerMethodField()
-    reservations_petit_dej = serializers.SerializerMethodField()
-    reservations_dejeuner = serializers.SerializerMethodField()
-    reservations_diner = serializers.SerializerMethodField()
+    nbre_reserve_jour       = serializers.SerializerMethodField()
+    reservations_petit_dej  = serializers.SerializerMethodField()
+    reservations_dejeuner   = serializers.SerializerMethodField()
+    reservations_diner      = serializers.SerializerMethodField()
 
     class Meta:
         model = Jour
         fields = [
-            'id', 
+            'id',
             'nomJour',
-            'total_reservations',
+            'nbre_reserve_jour',
             'reservations_petit_dej',
             'reservations_dejeuner',
             'reservations_diner',
         ]
-        read_only_fields = fields
+        read_only_fields = [
+            'nbre_reserve_jour',
+            'reservations_petit_dej',
+            'reservations_dejeuner',
+            'reservations_diner',
+        ]
 
-    def get_total_reservations(self, obj):
+    def get_nbre_reserve_jour(self, obj):
         return obj.get_nbre_reserve_jour
 
     def get_reservations_petit_dej(self, obj):
-        return obj.get_nbre_reserve_lendemain(1)  # ID période 1 = Petit Déj
+        return obj.get_nbre_reserve_lendemain(1)
 
     def get_reservations_dejeuner(self, obj):
-        return obj.get_nbre_reserve_lendemain(2)  # ID période 2 = Déjeuner
+        return obj.get_nbre_reserve_lendemain(2)
 
     def get_reservations_diner(self, obj):
-        return obj.get_nbre_reserve_lendemain(3)  # ID période 3 = Dîner
+        return obj.get_nbre_reserve_lendemain(3)

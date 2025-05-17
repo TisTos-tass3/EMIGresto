@@ -2,34 +2,35 @@ from django.db import models
 from django.utils import timezone
 
 class Jour(models.Model):
-    id   = models.AutoField(primary_key=True, db_column='id')
-    nomJour = models.CharField(db_column='nomJour', max_length=10)  # Field name made lowercase.
+    id       = models.AutoField(primary_key=True, db_column='id')
+    nomJour  = models.CharField(db_column='nomJour', max_length=10)
 
     @property
     def get_nomJour(self):
-        return f"{self.nomJour}"
-    
-    @property  # Gardez le @property pour l'accès en tant qu'attribut
-    def get_nbre_reserve_jour(self):  # Correction : .count() ici !
+        return self.nomJour
+
+    @property
+    def get_nbre_reserve_jour(self):
         from .reservations import Reservation
-        return Reservation.objects.filter(idJour=self).count() # .count() est crucial
+        # on filtre bien sur le champ "jour", pas "Jour" ni "idJour"
+        return Reservation.objects.filter(jour=self).count()
 
     def get_nbre_reserve_lendemain(self, periode_id):
         from .periode import Periode
         from .reservations import Reservation
+
         try:
-            periode = Periode.objects.get(idPeriode=periode_id)
+            periode = Periode.objects.get(id=periode_id)
         except Periode.DoesNotExist:
-            print(f"Période {periode_id} inexistante")
             return 0
 
-        lendemain = timezone.now().date() + timezone.timedelta(days=1)
-        print(f"Vérification des réservations pour {lendemain} et période {periode_id}")
-        count = Reservation.objects.filter(dateReservation=lendemain, idJour=self, idPeriode=periode).count()
-        print(f"Réservations pour {lendemain} : {count}")
-        return count
-
+        lendemain = timezone.localdate() + timezone.timedelta(days=1)
+        # on utilise les bons noms de champs : "date", "jour" et "periode"
+        return Reservation.objects.filter(
+            date=lendemain,
+            jour=self,
+            periode=periode
+        ).count()
 
     class Meta:
         db_table = 'jour'
-

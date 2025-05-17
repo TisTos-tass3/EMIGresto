@@ -13,3 +13,4 @@ from .transaction        import Transaction
 from .paiement           import Paiement
 from .recuTicket         import RecuTicket
 from .notification       import Notification
+from .recharge           import Recharge

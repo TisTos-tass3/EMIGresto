@@ -6,11 +6,12 @@ from .views import (
     auth_views, etudiant_views, jour_views, notification_views,
     paiement_views, personnel_views, recu_views,
     reservation_views, ticket_views, transaction_views,
-    utilisateur_views,
+    utilisateur_views, recharge_views
 )
 
 router = DefaultRouter()
 viewsets = [
+    ('recharges',       recharge_views.RechargeViewSet),
     ('etudiants',       etudiant_views.EtudiantViewSet),
     ('jours',           jour_views.JourViewSet),
     ('reservations',    reservation_views.ReservationViewSet),

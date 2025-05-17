@@ -1,4 +1,3 @@
-# monapp/tests/test_authentification.py
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -15,7 +14,7 @@ def user_data():
         "password": "TestPass123!",
         "nom": "Test",
         "prenom": "User",
-        # si tu ne gères pas "telephone" côté serializer, supprime-le !
+        "matricule": "E1001",         # Important si ton modèle Etudiant le demande
         "telephone": "90000000"
     }
 
@@ -23,7 +22,7 @@ def user_data():
 def test_register_user(client, user_data):
     url = reverse('auth-register')
     response = client.post(url, user_data, format="json")
-    assert response.status_code == status.HTTP_201_CREATED
+    assert response.status_code == status.HTTP_201_CREATED, response.data
     assert response.data['email'] == user_data['email']
 
 @pytest.mark.django_db
@@ -34,7 +33,7 @@ def test_login_user(client, user_data):
         {"email": user_data['email'], "password": user_data['password']},
         format="json"
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK, response.data
     assert 'access' in response.data and 'refresh' in response.data
 
 @pytest.mark.django_db
@@ -45,7 +44,7 @@ def test_login_wrong_password(client, user_data):
         {"email": user_data['email'], "password": "wrongpass"},
         format="json"
     )
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.data
 
 @pytest.mark.django_db
 def test_refresh_token(client, user_data):
@@ -55,6 +54,7 @@ def test_refresh_token(client, user_data):
         {"email": user_data['email'], "password": user_data['password']},
         format="json"
     )
+    assert login.status_code == status.HTTP_200_OK
     refresh = login.data['refresh']
     response = client.post(reverse('token_refresh'), {"refresh": refresh}, format="json")
     assert response.status_code == status.HTTP_200_OK
@@ -73,4 +73,3 @@ def test_logout_user(client, user_data):
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
     response = client.post(reverse('auth-logout'), {"refresh": refresh}, format="json")
     assert response.status_code == status.HTTP_205_RESET_CONTENT
-

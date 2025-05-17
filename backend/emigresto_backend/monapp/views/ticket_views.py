@@ -9,3 +9,6 @@ class TicketViewSet(BaseModelViewSet):
     filterset_fields = ['type_ticket', 'date_vente']
     search_fields = ['etudiant__matricule']
     ordering_fields = ['date_vente', 'prix']
+    
+    def perform_create(self, serializer):
+        serializer.save(etudiant=self.request.user)
