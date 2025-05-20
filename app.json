@@ -1,6 +1,9 @@
 {
   "expo": {
     "name": "EMIGresto",
+    "updates": {
+      "enabled": false
+    },
     "slug": "EMIGresto",
     "version": "1.0.0",
     "orientation": "portrait",
