@@ -42,5 +42,7 @@ urlpatterns = [
 
     # JWT endpoints
     path('api/auth/token/',   auth_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/me/', auth_views.MeView.as_view(), name='auth-me'),
     path('api/auth/token/refresh/', auth_views.TokenRefreshView.as_view(), name='token_refresh'),
 ]
+

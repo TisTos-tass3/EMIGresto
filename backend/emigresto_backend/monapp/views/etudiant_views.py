@@ -8,3 +8,4 @@ class EtudiantViewSet(BaseModelViewSet):
     serializer_class = EtudiantSerializer
     search_fields = ['matricule', 'nom', 'prenom']
     ordering_fields = ['matricule']
+

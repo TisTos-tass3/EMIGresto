@@ -8,6 +8,17 @@ class Etudiant(Utilisateur):
         default=0,
         help_text="Solde du compte étudiant"
     )
+    GENRE_CHOICES = [
+        ('M', 'Masculin'),
+        ('F', 'Féminin'),
+    ]
+    genre = models.CharField(
+        max_length=2,
+        choices=GENRE_CHOICES,
+        blank=True,
+        null=True,
+        help_text="Genre de l'utilisateur"
+    )
 
     class Meta:
         verbose_name = "Étudiant"

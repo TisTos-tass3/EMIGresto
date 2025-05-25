@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#w!v=qb1t5051ng59oag+7*7yx#w0-a@(oxr7f(zr=8=cbl7_@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 
 # Application definition
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
+    "corsheaders",
+    'django_extensions',
     'monapp',
 ]
 
@@ -70,12 +72,8 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-
-SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": ("Bearer",),
-}
-
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",            # <<< tout en haut
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,6 +84,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'emigresto_backend.urls'
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
@@ -118,6 +118,12 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     }
+}
+
+LOGGING = {
+  'version': 1,
+  'handlers': {'console': {'class': 'logging.StreamHandler'}},
+  'root': {'handlers': ['console'], 'level': 'DEBUG'},
 }
 
 

@@ -34,4 +34,9 @@ class Paiement(models.Model):
     
     class Meta:
         db_table = 'paiement'
+        indexes = [
+            models.Index(fields=['date']),
+        ]
+        ordering = ['-date']  # Tri par défaut
+
 
