@@ -1,5 +1,6 @@
 // src/App.jsx
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Dashboard from './pages/Dashboard'
 import History from './pages/History'
@@ -8,25 +9,28 @@ import ManageReservations from './pages/ManageReservations'
 import RegisterPage from './pages/RegisterPage'
 import SellTicket from './pages/SellTicket'
 
-/*
- * Composant qui protège l'accès aux routes privées.
- * Tant que l'AuthContext n'a pas fini de charger (ready=false), 
- * on affiche un loader global.
- */
+// Composant pour routes privées
 function PrivateRoute({ children }) {
-  const { user, ready } = useAuth()
+  const { user, loading } = useAuth()
+  const location = useLocation()
 
-  // Si on est encore en train de vérifier le token (call /me/)
-  if (!ready) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Chargement…</p>
-      </div>
-    )
-  } 
+  if (loading) return null  // déjà géré par AuthProvider, mais on double-sécurise
+  if (!user) {
+    toast.info('Veuillez vous connecter')
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+  return children
+}
 
-  // Si pas d'utilisateur connecté, redirection vers /login
-  return user ? children : <Navigate to="/login" replace />
+// Composant pour routes publiques (login/register)
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (user) {
+    toast.success('Vous êtes déjà connecté')
+    return <Navigate to="/" replace />
+  }
+  return children
 }
 
 export default function App() {
@@ -34,49 +38,20 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Routes publiques */}
-          <Route path="/login"    element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          {/* routes publiques */}
+          <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
 
-          {/* Routes privées */}
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/sell"
-            element={
-              <PrivateRoute>
-                <SellTicket />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/history"
-            element={
-              <PrivateRoute>
-                <History />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/reservations"
-            element={
-              <PrivateRoute>
-                <ManageReservations />
-              </PrivateRoute>
-            }
-          />
+          {/* routes privées */}
+          <Route path="/"           element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/sell"       element={<PrivateRoute><SellTicket /></PrivateRoute>} />
+          <Route path="/history"    element={<PrivateRoute><History /></PrivateRoute>} />
+          <Route path="/reservations" element={<PrivateRoute><ManageReservations /></PrivateRoute>} />
 
-          {/* Catch-all : redirige vers le dashboard */}
+          {/* catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   )
 }
-

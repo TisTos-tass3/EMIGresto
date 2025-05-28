@@ -1,56 +1,70 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import { API } from '../services/apiServices'
+import { tokenStorage } from '../services/tokenStorage'
 
-// 1) on crée le contexte **en haut** du fichier, une seule fois
-export const AuthContext = createContext({
+// 1) Création du contexte
+const AuthContext = createContext({
   user: null,
-  ready: false,
+  loading: true,
   login: async () => {},
   register: async () => {},
   logout: async () => {},
 })
-
-// 2) hook de consommation (ne change jamais de signature)
 export function useAuth() {
   return useContext(AuthContext)
 }
 
-// 3) provider
 export function AuthProvider({ children }) {
-  const [user, setUser]   = useState(null)
-  const [ready, setReady] = useState(false)
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  // Au montage, on appelle /me/. L’intercepteur gère le rafraîchissement si nécessaire.
+  // 2) checkAuth une seule fois au mount
   useEffect(() => {
-    API.auth
-      .me()
-      .then(u => setUser(u))
-      .catch(() => setUser(null))
-      .finally(() => setReady(true))
+    async function checkAuth() {
+      const tok = await tokenStorage.getAccess()
+      if (!tok) {
+        setLoading(false)  // pas de token => on passe à ready
+        return
+      }
+      try {
+        const u = await API.auth.me()
+        setUser(u)
+      } catch {
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    checkAuth()
   }, [])
 
-  // Fonctions d’authent
+  // 3) login
   const login = async (email, password) => {
-    // 1) on récupère access+refresh
-    await API.auth.login({ email, password })
-    // 2) on rafraîchit le user
+    const data = await API.auth.login({ email, password })
     const u = await API.auth.me()
     setUser(u)
+    toast.success('Connexion réussie')
+    return data
   }
 
-  const register = async data => {
-    await API.auth.register(data)
-    // si tu veux auto-login : await login(data.email, data.password)
+  // 4) register
+  const register = async (payload) => {
+    const res = await API.auth.register(payload)
+    toast.success('Inscription réussie')
+    return res
   }
 
+  // 5) logout
   const logout = async () => {
     await API.auth.logout()
     setUser(null)
+    toast.success('Déconnexion réussie')
   }
 
-  // tant que ready===false, on bloque l’UI
-  if (!ready) {
+  // 6) pendant le chargement initial, on bloque tout
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-gray-500">Chargement de la session…</p>
@@ -58,11 +72,8 @@ export function AuthProvider({ children }) {
     )
   }
 
-  // on fournit toujours les mêmes clés pour être HMR-safe
-  const value = { user, ready, login, register, logout }
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )
