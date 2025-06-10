@@ -1,22 +1,20 @@
-# monapp/views/reservation_viewset.py
-from rest_framework import mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
-from ..models.reservations import Reservation
-from ..serializers.reservation_serializer import ReservationSerializer , ReservationCreateSerializer
+from rest_framework import viewsets, permissions
+from monapp.models.reservations import Reservation
+from monapp.serializers.reservation_serializer import (
+    ReservationSerializer,
+    ReservationCreateSerializer
+)
 
 class ReservationViewSet(viewsets.ModelViewSet):
-    queryset         = Reservation.objects.select_related(
-                          'etudiant', 'reservant_pour', 'jour', 'periode'
-                       ).all()
-    permission_classes = [IsAuthenticated]
-    filterset_fields = ['jour', 'periode', 'etudiant', 'reservant_pour', 'statut', 'date']
-    search_fields    = ['etudiant__matricule', 'reservant_pour__matricule']
+    queryset = Reservation.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.action in ('create',):
+        if self.action in ['create', 'update', 'partial_update']:
             return ReservationCreateSerializer
         return ReservationSerializer
 
     def perform_create(self, serializer):
-        # injecte automatiquement l'étudiant connecté
-        serializer.save(etudiant=self.request.user)
+        # ✅ Utilise as_etudiant pour obtenir une vraie instance d'étudiant
+        etudiant = self.request.user.as_etudiant
+        serializer.save(etudiant=etudiant)

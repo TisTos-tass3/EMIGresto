@@ -1,9 +1,11 @@
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
-import { LinearGradient } from 'expo-linear-gradient'; // Importez LinearGradient
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Animated,
   LayoutAnimation,
   Platform,
@@ -11,16 +13,26 @@ import {
   Text,
   TouchableOpacity,
   UIManager,
-  View,
+  View
 } from 'react-native';
-import Modal from 'react-native-modal';
-import ReloadBottomSheet from './Components/sheets/RechargeSheet';
-import ReserveBottomSheet from './Components/sheets/ReservationSheet';
-import TicketBottomSheet from './Components/sheets/TicketSheet';
-
-import { responsive as r } from './utils/responsiveDimensions';
+import ReloadBottomSheet from '../sheets/RechargeSheet';
+import ReserveBottomSheet from '../sheets/ReservationSheet';
+import TicketBottomSheet from '../sheets/TicketSheet';
+import r from '../utils/responsiveDimensions';
 
 const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+// homepage.tsx - at the top level, or right above Homepage component
+const jourToAbbreviation: { [key: string]: string } = {
+  'Lundi': 'Lun',
+  'Mardi': 'Mar',
+  'Mercredi': 'Mer',
+  'Jeudi': 'Jeu',
+  'Vendredi': 'Ven',
+  'Samedi': 'Sam',
+  'Dimanche': 'Dim',
+};
+// REMOVED: const [reservations, setReservations] = useState<{ [key: string]: string[] }>({});
+
 
 const RepasBox = ({ titre, joursActifs }: { titre: string; joursActifs: string[] }) => (
   <View style={{ marginBottom: r.repasBoxMarginBottom }}>
@@ -66,23 +78,21 @@ const bgColors: {
   [key: string]: {
     start: string;
     end: string;
-    iconColor?: string; // Rend iconColor optionnel
+    iconColor?: string;
   };
 } = {
-  primary100: { start: '#e0f2fe', end: '#bfdbfe' }, // Light blue for gradient
+  primary100: { start: '#e0f2fe', end: '#bfdbfe' },
   primary200: { start: '#bfdbfe', end: '#93c5fd' },
   primary300: { start: '#93c5fd', end: '#60a5fa' },
   primary400: { start: '#60a5fa', end: '#3b82f6' },
-  primary500: { start: '#3b82f6', end: '#2563eb' }, // Main blue
+  primary500: { start: '#3b82f6', end: '#2563eb' },
   primary600: { start: '#2563eb', end: '#1d4ed8' },
-  primary700: { start: '#1d4ed8', end: '#1e40af' }, // Darkest blue
-
-  // Couleurs très claires avec un gradient subtil pour les OptionBox
-  VeryLightRed: { start: '#FFF0F5', end: '#FFE8EE', iconColor: '#DC143C' }, // LavenderBlush + un rouge plus visible pour l'icône
-  VeryLightYellow: { start: '#FFFFF0', end: '#FFFACD', iconColor: '#DAA520' }, // Ivory + un jaune plus visible
-  VeryLightGreen: { start: '#F0FFF0', end: '#E0FFEB', iconColor: '#228B22' }, // Honeydew + un vert plus visible
-  VeryLightPurple: { start: '#F8F8FF', end: '#F0F0FF', iconColor: '#8A2BE2' }, // GhostWhite + un violet plus visible
-  VeryLightBlue: { start: '#F0F8FF', end: '#E6F0FF', iconColor: '#1E90FF' }, // AliceBlue + un bleu plus visible
+  primary700: { start: '#1d4ed8', end: '#1e40af' },
+  VeryLightRed: { start: '#FFF0F5', end: '#FFE8EE', iconColor: '#DC143C' },
+  VeryLightYellow: { start: '#FFFFF0', end: '#FFFACD', iconColor: '#DAA520' },
+  VeryLightGreen: { start: '#F0FFF0', end: '#E0FFEB', iconColor: '#228B22' },
+  VeryLightPurple: { start: '#F8F8FF', end: '#F0F0FF', iconColor: '#8A2BE2' },
+  VeryLightBlue: { start: '#F0F8FF', end: '#E6F0FF', iconColor: '#1E90FF' },
 };
 
 const OptionBox = ({
@@ -91,17 +101,16 @@ const OptionBox = ({
   sousTitre,
   bgColor,
   onPress,
-  iconColor, // Ajout de la prop iconColor
+  iconColor,
 }: {
   iconName: keyof typeof Entypo.glyphMap;
   titre: string;
   sousTitre?: string;
   bgColor: keyof typeof bgColors;
   onPress?: () => void;
-  iconColor: string; // Type pour la couleur de l'icône
+  iconColor: string;
 }) => {
   const colors = bgColors[bgColor];
-  // La couleur de l'icône est maintenant passée directement, pas besoin de la calculer ici.
 
   return (
     <TouchableOpacity
@@ -150,10 +159,10 @@ const OptionBox = ({
         </View>
         <Text
           style={{
-            color: iconColor, // Utilisez la couleur de l'icône pour le titre
-            fontWeight: 'semibold',
+            color: iconColor,
+            fontWeight: '600',
             textAlign: 'center',
-            fontSize: 20, // Correspond à 'text-xl'
+            fontSize: 20,
           }}
         >
           {titre}
@@ -181,6 +190,17 @@ export default function Homepage() {
   const [isTicketModalVisible, setTicketModalVisible] = useState(false);
   const [isReserveModalVisible, setReserveModalVisible] = useState(false);
   const [isReloadModalVisible, setReloadModalVisible] = useState(false);
+  const [userData, setUserData] = useState<{
+    prenom: string;
+    solde: number;
+    nombre_tickets: number
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // MOVED HERE: useState for reservations
+  const [reservations, setReservations] = useState<{ [key: string]: string[] }>({});
+
 
   const toggleTicketModal = () => setTicketModalVisible(!isTicketModalVisible);
   const toggleReserveModal = () => setReserveModalVisible(!isReserveModalVisible);
@@ -208,36 +228,174 @@ export default function Homepage() {
 
   const toggleBottomSheet = () => setModalVisible((prev) => !isModalVisible);
 
+  const fetchUserData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+
+      if (!token) {
+        router.replace('/Screens/Login');
+        return;
+      }
+      console.log("Token being sent:", token);
+      const response = await fetch('http://127.0.0.1:8000/api/user-details/', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await AsyncStorage.removeItem('access_token');
+          router.replace('/Screens/Login');
+          return;
+        }
+        throw new Error('Échec du chargement des données');
+      }
+
+      const data = await response.json();
+      setUserData(data);
+    } catch (err: any) {
+      setError(err.message || 'Une erreur est survenue');
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+  
+
+const jourToAbbreviation: { [key: string]: string } = {
+  'Lundi': 'Lun',
+  'Mardi': 'Mar',
+  'Mercredi': 'Mer',
+  'Jeudi': 'Jeu',
+  'Vendredi': 'Ven',
+  'Samedi': 'Sam',
+  'Dimanche': 'Dim',
+};
+
+const fetchReservations = useCallback(async () => {
+  try {
+    const token = await AsyncStorage.getItem('access_token');
+    if (!token) return;
+
+   const response = await fetch('http://127.0.0.1:8000/api/reservations/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) throw new Error('Erreur lors de la récupération des réservations');
+
+    const responseData = await response.json();
+
+    // Ajout sécurité car l’API Django retourne {count, next, previous, results}
+    if (!responseData.results || !Array.isArray(responseData.results)) {
+      console.error("Format inattendu :", responseData);
+      return;
+    }
+
+    const repasMap: { [key: string]: string[] } = {
+      'Petit-Déjeuner': [],
+      'Déjeuner': [],
+      'Diner': []
+    };
+
+    // CORRECTED: Iterate over responseData.results
+    responseData.results.forEach((reservation: any) => {
+  const periode = reservation.periode?.nomPeriode;
+  const fullJourName = reservation.jour?.nomJour; // Get the full day name from API
+
+  console.log(`Processing reservation: Periode: ${periode}, Full Day: ${fullJourName}`); // NEW LOG
+
+  // Convert full day name to abbreviation
+  const abbreviatedJour = jourToAbbreviation[fullJourName];
+
+  console.log(`Converted to Abbreviated Day: ${abbreviatedJour}`); // NEW LOG
+
+  if (periode && repasMap[periode] && abbreviatedJour && !repasMap[periode].includes(abbreviatedJour)) {
+    repasMap[periode].push(abbreviatedJour);
+    console.log(`Added ${abbreviatedJour} to ${periode}. Current ${periode} days: ${repasMap[periode]}`); // NEW LOG
+  } else {
+    console.log(`Did not add: Periode: ${periode}, Abbreviated Day: ${abbreviatedJour}. Condition failed: ${!periode || !repasMap[periode] || !abbreviatedJour || repasMap[periode].includes(abbreviatedJour)}`); // NEW LOG
+  }
+});
+
+    console.log("Final repasMap after processing:", repasMap); // Keep this for verification
+    setReservations(repasMap);
+  } catch (error) {
+    console.error("Erreur chargement des réservations:", error);
+  }
+}, []);
+// NOUVELLE FONCTION DE RAPPEL POUR LA MISE À JOUR DES RÉSERVATIONS
+  const handleReservationSuccess = useCallback(() => {
+    console.log("Reservation successful! Re-fetching reservations...");
+    fetchReservations(); // Appel à la fonction qui rafraîchit les données
+  }, [fetchReservations]); // Dépend de fetchReservations pour garantir qu'elle est toujours à jour
+
+
+  useEffect(() => {
+  fetchUserData();
+  fetchReservations();
+}, [fetchUserData, fetchReservations]);
+
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-red-500 text-lg">{error}</Text>
+        <TouchableOpacity
+          className="mt-4 bg-blue-500 px-4 py-2 rounded"
+          onPress={() => router.replace('/Screens/Login')}
+        >
+          <Text className="text-white">Se connecter</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-white relative">
       <ScrollView
         showsVerticalScrollIndicator={false}
       >
-        {/* SECTION DU HAUT : Compte utilisateur */}
         <View
           style={{
-            backgroundColor: '#2563eb', // Couleur unie
+            backgroundColor: '#2563eb',
             borderBottomLeftRadius: r.borderRadiusExpandable,
             borderBottomRightRadius: r.borderRadiusExpandable,
             paddingHorizontal: r.headerPaddingHorizontal,
             paddingVertical: r.headerPaddingVertical,
-            shadowColor: '#000', // Ombre
-            shadowOffset: { width: 0, height: 4 }, // Ombre
-            shadowOpacity: 0.3, // Ombre
-            shadowRadius: 6, // Ombre
-            elevation: 8, // Ombre pour Android
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 6,
+            elevation: 8,
           }}
         >
           <View style={{ marginBottom: r.headerGreetingMarginBottom }}>
-            <Text style={{ fontSize: r.headerGreetingFontSize }} className="text-white">Bonjour Mohammed,</Text>
+            <Text style={{ fontSize: r.headerGreetingFontSize }} className="text-white">
+              Bonjour {userData?.prenom || 'Utilisateur'},
+            </Text>
           </View>
           <View style={{ marginBottom: r.headerAccountMarginBottom }}>
             <Text style={{ fontSize: r.headerAccountTitleFontSize, marginBottom: r.headerAccountTextOpacityMarginBottom }} className="text-white opacity-80">COMPTE</Text>
-            <Text style={{ fontSize: r.headerAccountAmountFontSize, marginBottom: r.headerAccountAmountMarginBottom }} className="text-white font-bold">FCFA 10 000</Text>
+            <Text style={{ fontSize: r.headerAccountAmountFontSize, marginBottom: r.headerAccountAmountMarginBottom }} className="text-white font-bold">
+              FCFA {userData?.solde?.toLocaleString('fr-FR') || '0'}
+            </Text>
           </View>
         </View>
 
-        {/* BLOC TICKETS RESTANTS */}
         <View
           style={{
             backgroundColor: 'white',
@@ -273,11 +431,10 @@ export default function Homepage() {
               marginTop: r.ticketsBoxSpaceY / 2,
             }}
           >
-            30 TICKETS
+            {userData?.nombre_tickets || '0'} TICKETS
           </Text>
         </View>
 
-        {/* SECTION "Réservation de la semaine" */}
         <Text
           style={{
             textAlign: 'center',
@@ -291,27 +448,27 @@ export default function Homepage() {
           Réservation de la semaine
         </Text>
 
-        {/* MENU DÉROULANT */}
         <View
           style={{
-            backgroundColor: '#2563eb', // Couleur unie
+            backgroundColor: '#2563eb',
             borderRadius: r.borderRadiusExpandable,
             padding: r.expandablePadding,
             marginTop: r.expandableMarginTop,
             marginHorizontal: r.expandableMarginHorizontal,
             overflow: 'hidden',
-            shadowColor: '#000', // Ombre
-            shadowOffset: { width: 0, height: 4 }, // Ombre
-            shadowOpacity: 0.3, // Ombre
-            shadowRadius: 6, // Ombre
-            elevation: 8, // Ombre pour Android
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 6,
+            elevation: 8,
           }}
         >
-          <RepasBox titre="DÉJEUNER" joursActifs={['Lun', 'Mer', 'Jeu', 'Ven', 'Sam']} />
+          <RepasBox titre="DÉJEUNER" joursActifs={reservations['Déjeuner'] || []} />
           <Animated.View style={{ height: menuHeight, overflow: 'hidden' }}>
-            <RepasBox titre="DINER" joursActifs={['Lun', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']} />
-            <RepasBox titre="PETIT-DÉJEUNER" joursActifs={[]} />
+            <RepasBox titre="DINER" joursActifs={reservations['Diner'] || []} />
+            <RepasBox titre="PETIT-DÉJEUNER" joursActifs={reservations['Petit-Déjeuner'] || []} />
           </Animated.View>
+
           <TouchableOpacity onPress={toggleExpand} style={{ alignItems: 'center', marginTop: r.repasBoxTitleMarginTop }}>
             {expanded ? (
               <Entypo name="chevron-up" size={r.iconSize} color="white" />
@@ -364,7 +521,6 @@ export default function Homepage() {
         <View style={{ height: r.bottomNavBarHeight + r.paddingBottomForScroll }} />
       </ScrollView>
 
-      {/* BARRE DE NAVIGATION INFÉRIEURE - MODIFIÉ */}
       <View
         style={{
           position: 'absolute',
@@ -380,15 +536,15 @@ export default function Homepage() {
           shadowOpacity: 0.1,
           shadowRadius: 3,
           elevation: 5,
-          borderTopLeftRadius: 10, // Ajoutez ici un rayon pour le coin supérieur gauche
-          borderTopRightRadius: 10, // Ajoutez ici un rayon pour le coin supérieur droit
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
         }}
       >
          <TouchableOpacity
           className="items-center"
           onPress={() => {
             setSelectedTab('notif');
-            router.push('/Screens/notificationPage'); // Navigue vers la page de notifications
+            router.push('/Screens/notificationPage');
           }}
         >
           <Feather name="bell" size={r.bottomNavIconSize} color={selectedTab === 'notif' ? '#3B82F6' : 'lightgray'} />
@@ -400,21 +556,12 @@ export default function Homepage() {
           <Feather name="user" size={r.bottomNavIconSize} color={selectedTab === 'profile' ? '#3B82F6' : 'lightgray'} />
         </TouchableOpacity>
       </View>
-
       <TicketBottomSheet isVisible={isTicketModalVisible} toggleBottomSheet={toggleTicketModal} />
-      <ReserveBottomSheet isVisible={isReserveModalVisible} toggleBottomSheet={toggleReserveModal} />
-      <ReloadBottomSheet isVisible={isReloadModalVisible} toggleBottomSheet={toggleReloadModal} />
-
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={toggleBottomSheet}
-        swipeDirection="down"
-        onSwipeComplete={toggleBottomSheet}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-      >
-        <View>
-        </View>
-      </Modal>
+      <ReserveBottomSheet
+        isVisible={isReserveModalVisible}
+        toggleBottomSheet={toggleReserveModal}
+        onReservationSuccess={handleReservationSuccess} // <-- PASSEZ LA FONCTION ICI
+      /> <ReloadBottomSheet isVisible={isReloadModalVisible} toggleBottomSheet={toggleReloadModal} />
     </View>
   );
 }

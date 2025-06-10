@@ -10,7 +10,7 @@ def test_ticket_crud(auth_client, create_user):
     tid = resp.data["id"]
     assert resp.data["prix"] == 80
 
-    # Create dej/dîner
+    # Create dej/DINER
     resp2 = auth_client.post("/api/tickets/", {"type_ticket": "DEJ"})
     assert resp2.status_code == 201
     assert resp2.data["prix"] == 125

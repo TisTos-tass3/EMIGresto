@@ -1,3 +1,4 @@
+# monapp/models/utilisateur.py
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
@@ -9,20 +10,21 @@ class UtilisateurManager(BaseUserManager):
             raise ValueError("L'adresse e-mail est obligatoire")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(password)
+        user.set_password(password)  # Django gère le hash ici
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('role', "ADMIN")
         return self.create_user(email, password, **extra_fields)
+
 
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=100)
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
-    mot_de_passe = models.CharField(max_length=128)
     telephone = models.CharField(max_length=20, blank=True, null=True)
     role = models.CharField(
         max_length=30,
@@ -46,20 +48,37 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
     objects = UtilisateurManager()
 
-   
+    def get_full_name(self):
+        return f"{self.nom} {self.prenom}"
+
+    def get_short_name(self):
+        return self.prenom
+
+    def __str__(self):
+        return self.email
+
+    @property
+    def as_etudiant(self):
+        # Import Etudiant locally to avoid circular imports, but only when needed.
+        # This is a common pattern for related models.
+        from monapp.models.etudiant import Etudiant
+
+        # Check if the user's role is 'ETUDIANT' first
+        if self.role == "ETUDIANT": #
+            try:
+                # Attempt to retrieve the related Etudiant object.
+                # Assuming 'etudiant' is the default related_name or explicitly set as such
+                # if Etudiant has a OneToOneField like:
+                # utilisateur = models.OneToOneField(Utilisateur, on_delete=models.CASCADE, related_name='etudiant')
+                return self.etudiant
+            except Etudiant.DoesNotExist:
+                # If the role is 'ETUDIANT' but no Etudiant profile exists, raise a specific error
+                raise ValueError("L'utilisateur est marqué comme étudiant mais n'a pas de profil étudiant associé.")
+        else:
+            # If the user's role is not 'ETUDIANT', then they are not an etudiant.
+            raise ValueError("Cet utilisateur n'est pas un étudiant.")
+
     class Meta:
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
         db_table = 'utilisateur'
-
-
-    def __str__(self):
-        return f"{self.nom} {self.prenom} ({self.email})"
-
-    def se_connecter(self):
-        # Logique d'authentification personnalisée si besoin
-        pass
-
-    def se_deconnecter(self):
-        # Logique de déconnexion personnalisée si besoin
-        pass
