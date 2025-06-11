@@ -86,3 +86,21 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# monapp/views/auth_views.py
+from rest_framework import generics, permissions, serializers
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class MeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'nom', 'prenom', 'role']
+
+class MeView(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class    = MeSerializer
+
+    def get_object(self):
+        return self.request.user

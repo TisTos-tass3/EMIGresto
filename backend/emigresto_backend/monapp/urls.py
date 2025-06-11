@@ -36,3 +36,4 @@ urlpatterns = [
     # User details endpoint
     path('api/user-details/', user_details_views.UserDetailsAPIView.as_view(), name='user-details'),
 ]
+

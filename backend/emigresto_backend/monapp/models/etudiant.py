@@ -13,6 +13,18 @@ class Etudiant(Utilisateur):
         default=0,
         help_text="Solde du compte étudiant"
     )
+    ticket_quota = models.PositiveIntegerField(default=0, help_text="Tickets numériques restants")
+    GENRE_CHOICES = [
+        ('M', 'Masculin'),
+        ('F', 'Féminin'),
+    ]
+    genre = models.CharField(
+        max_length=2,
+        choices=GENRE_CHOICES,
+        blank=True,
+        null=True,
+        help_text="Genre de l'utilisateur"
+    )
     sexe = models.CharField(
         max_length=1,
         choices=SEXE_CHOICES,
