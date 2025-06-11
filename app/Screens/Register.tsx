@@ -12,7 +12,6 @@ export default function RegisterScreen() {
   const [sexe, setSexe] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  // Optional: Explicitly set role for clarity, though backend defaults to ETUDIANT
   const [role, setRole] = useState('ETUDIANT');
 
   const handleRegister = async () => {
@@ -24,9 +23,7 @@ export default function RegisterScreen() {
     try {
       const response = await fetch('http://127.0.0.1:8000/api/auth/register/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nom,
           prenom,
@@ -35,7 +32,7 @@ export default function RegisterScreen() {
           telephone,
           password,
           sexe,
-          role, // Include the role explicitly
+          role,
         }),
       });
 
@@ -43,15 +40,8 @@ export default function RegisterScreen() {
 
       if (response.ok) {
         Alert.alert("Succès", "Compte créé avec succès.");
-        // Optional : vider les champs après succès
-        setNom('');
-        setPrenom('');
-        setMatricule('');
-        setEmail('');
-        setTelephone('');
-        setPassword('');
-        setConfirmPassword('');
-        setSexe('');
+        setNom(''); setPrenom(''); setMatricule(''); setEmail('');
+        setTelephone(''); setPassword(''); setConfirmPassword(''); setSexe('');
         router.push('/Screens/Login');
       } else {
         console.log("Erreur côté backend:", data);
@@ -98,7 +88,10 @@ export default function RegisterScreen() {
       </TouchableOpacity>
 
       <Text className="text-center text-sm">
-        Vous avez déjà un compte ? <Text className="font-bold">Se connecter</Text>
+        Vous avez déjà un compte ?{' '}
+        <Text className="font-bold text-blue-700" onPress={() => router.push('/Screens/Login')}>
+          Se connecter
+        </Text>
       </Text>
     </View>
   );

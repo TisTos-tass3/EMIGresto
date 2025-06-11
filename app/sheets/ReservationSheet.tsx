@@ -21,6 +21,19 @@ const mealToId: Record<string, number> = {
   'PETIT-DÉJEUNER': 3, 'DÉJEUNER': 1, 'DINER': 2,
 };
 
+const dayFullNames: Record<string, string> = {
+  'Lun': 'LUNDI',
+  'Mar': 'MARDI',
+  'Mer': 'MERCREDI',
+  'Jeu': 'JEUDI',
+  'Ven': 'VENDREDI',
+  'Sam': 'SAMEDI',  
+  'Dim': 'DIMANCHE',
+};
+
+const getFullDayNames = (days: string[]) => days.map(day => dayFullNames[day] || day).join(', ');
+
+
 const parseApiError = (responseData: any): string => {
   if (!responseData) return "Erreur inconnue.";
   if (typeof responseData === 'string') return responseData;
@@ -176,7 +189,7 @@ const ReserveBottomSheet: React.FC<ReserveBottomSheetProps> = ({
             <View className="flex-row flex-wrap justify-center gap-2">
               {days.map((day) => (
                 <TouchableOpacity key={day} onPress={() => toggleDay(day)} className="rounded-xl px-2 py-2 border" style={{
-                  backgroundColor: selectedDays.includes(day) ? '#1E3A8A' : '#E5E7EB',
+                  backgroundColor: selectedDays.includes(day) ? '#2563eb' : '#E5E7EB',
                   borderColor: selectedDays.includes(day) ? '#1E3A8A' : '#D1D5DB',
                 }}>
                   <Text style={{ color: selectedDays.includes(day) ? 'white' : '#4B5563', fontWeight: 'bold' }}>{day}</Text>
@@ -196,7 +209,7 @@ const ReserveBottomSheet: React.FC<ReserveBottomSheetProps> = ({
         <View className="bg-white p-6 rounded-2xl w-96">
           <Text className="text-2xl font-bold text-center mb-6">CONFIRMATION</Text>
           <Text className="text-center mb-2 text-lg">Vous avez choisi {selectedMeal.toLowerCase()} pour :</Text>
-          <Text className="text-center mb-4 text-lg font-semibold">{selectedDays.join(', ')}</Text>
+          <Text className="text-center mb-4 text-lg font-semibold">{getFullDayNames(selectedDays)}</Text>
           <TouchableOpacity onPress={handleConfirm} className="bg-green-500 p-4 rounded-xl mt-2 mb-2">
             {loading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center font-bold text-lg">CONFIRMER</Text>}
           </TouchableOpacity>
@@ -212,7 +225,7 @@ const ReserveBottomSheet: React.FC<ReserveBottomSheetProps> = ({
           <AntDesign name="checkcircle" size={64} color="green" />
           <Text className="font-bold text-center mt-3 text-green-600 text-2xl">Réservation effectuée avec succès !</Text>
           <Text className="text-center mt-2 text-gray-700 text-lg">Repas : {selectedMeal}</Text>
-          <Text className="text-center mt-2 text-gray-700 text-lg">Jours : {selectedDays.join(', ')}</Text>
+          <Text className="text-center mt-2 text-gray-700 text-lg">Jours : {getFullDayNames(selectedDays)}</Text>
           <TouchableOpacity onPress={resetAll} className="mt-4 bg-green-500 px-4 py-2 rounded-lg">
             <Text className="text-white font-bold text-lg">OK</Text>
           </TouchableOpacity>

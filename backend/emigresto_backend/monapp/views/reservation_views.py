@@ -6,8 +6,18 @@ from monapp.serializers.reservation_serializer import (
 )
 
 class ReservationViewSet(viewsets.ModelViewSet):
-    queryset = Reservation.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Filtrer les réservations pour que chaque utilisateur ne voie que ses propres réservations.
+        """
+        user = self.request.user
+        try:
+            etudiant = user.as_etudiant
+            return Reservation.objects.filter(etudiant=etudiant)
+        except Exception:
+            return Reservation.objects.none()  # Si ce n'est pas un étudiant, retourner une liste vide
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -15,6 +25,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
         return ReservationSerializer
 
     def perform_create(self, serializer):
-        # ✅ Utilise as_etudiant pour obtenir une vraie instance d'étudiant
+        """
+        Lors de la création, associer automatiquement la réservation à l'étudiant connecté.
+        """
         etudiant = self.request.user.as_etudiant
         serializer.save(etudiant=etudiant)
