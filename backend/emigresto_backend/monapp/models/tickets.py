@@ -10,7 +10,7 @@ class Ticket(models.Model):
     DEJ_DINER  = 'DEJ'
     TYPE_CHOICES = [
         (PETIT_DEJ, 'Petit-déjeuner (80 FCFA)'),
-        (DEJ_DINER, 'Déjeuner/Dîner (125 FCFA)'),
+        (DEJ_DINER, 'Déjeuner/DINER (125 FCFA)'),
     ]
     PRICES = {
         PETIT_DEJ: 80,

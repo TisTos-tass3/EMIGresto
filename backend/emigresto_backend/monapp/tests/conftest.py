@@ -57,5 +57,5 @@ def setup_jours_periodes(db):
     for name in ["Lundi", "Mardi", "Mercredi"]:
         Jour.objects.create(nomJour=name)
 
-    for name in ["PetitDéj", "Déjeuner", "Dîner"]:
+    for name in ["PetitDéj", "Déjeuner", "DINER"]:
         Periode.objects.create(nomPeriode=name)

@@ -1,38 +1,21 @@
-
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-const HomeScreen = () => {
+
+const Index = () => {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to the App!</Text>
-      <Button
-        title="Go to Homepage"
-        onPress={() => router.push('./Screens/homepage')}
-      />
-      <Button
-        title="Go to Login"
-        onPress={() => router.push('./Screens/Login')}
-      />
-      <Button
-        title="Go to Register"
-        onPress={() => router.push('./Screens/Register')}
-      />
-      <Button
-        title="Go to Notification"
-        onPress={() => router.push('/Screens/notificationPage')}
-      />
-       <Button
-        title="Go to Profile"
-        onPress={() => router.push('/Screens/profilePage')}
-      />
+      <Button title="Go to Homepage" onPress={() => router.push('/Screens/homepage')} />
+      <Button title="Go to Login" onPress={() => router.push('/Screens/Login')} />
+      <Button title="Go to Register" onPress={() => router.push('/Screens/Register')} />
+      <Button title="Go to Notification" onPress={() => router.push('/Screens/notificationPage')} />
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -47,4 +30,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Index;

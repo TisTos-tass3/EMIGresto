@@ -44,13 +44,16 @@ INSTALLED_APPS = [
     "corsheaders",
     'django_extensions',
     'monapp',
+    'corsheaders',
+     'django_extensions',
+
 ]
 
 AUTH_USER_MODEL = 'monapp.Utilisateur'
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated"
+       "rest_framework.permissions.AllowAny"
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication"
@@ -168,3 +171,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOW_ALL_ORIGINS = True

@@ -7,7 +7,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Importez vos dimensions responsives
-import { responsive as r } from './utils/responsiveDimensions';
+import r from '../utils/responsiveDimensions';
 
 // Composant pour un élément d'information personnelle
 const ProfileInfoItem = ({ label, value }: { label: string; value: string }) => (

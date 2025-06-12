@@ -1,22 +1,32 @@
-# monapp/views/reservation_viewset.py
-from rest_framework import mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
-from ..models.reservations import Reservation
-from ..serializers.reservation_serializer import ReservationSerializer , ReservationCreateSerializer
+from rest_framework import viewsets, permissions
+from monapp.models.reservations import Reservation
+from monapp.serializers.reservation_serializer import (
+    ReservationSerializer,
+    ReservationCreateSerializer
+)
 
 class ReservationViewSet(viewsets.ModelViewSet):
-    queryset         = Reservation.objects.select_related(
-                          'etudiant', 'reservant_pour', 'jour', 'periode'
-                       ).all()
-    permission_classes = [IsAuthenticated]
-    filterset_fields = ['jour', 'periode', 'etudiant', 'reservant_pour', 'statut', 'date']
-    search_fields    = ['etudiant__matricule', 'reservant_pour__matricule']
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Filtrer les réservations pour que chaque utilisateur ne voie que ses propres réservations.
+        """
+        user = self.request.user
+        try:
+            etudiant = user.as_etudiant
+            return Reservation.objects.filter(etudiant=etudiant)
+        except Exception:
+            return Reservation.objects.none()  # Si ce n'est pas un étudiant, retourner une liste vide
 
     def get_serializer_class(self):
-        if self.action in ('create',):
+        if self.action in ['create', 'update', 'partial_update']:
             return ReservationCreateSerializer
         return ReservationSerializer
 
     def perform_create(self, serializer):
-        # injecte automatiquement l'étudiant connecté
-        serializer.save(etudiant=self.request.user)
+        """
+        Lors de la création, associer automatiquement la réservation à l'étudiant connecté.
+        """
+        etudiant = self.request.user.as_etudiant
+        serializer.save(etudiant=etudiant)

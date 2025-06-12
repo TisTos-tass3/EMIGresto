@@ -7,7 +7,7 @@ import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Importez vos dimensions responsives
-import { responsive as r } from './utils/responsiveDimensions';
+import r from '../utils/responsiveDimensions';
 
 // Définir les types de catégorie
 type NotificationCategory = 'Tout' | 'Réservation' | 'Achat' | 'Recharge' | 'Autre';
@@ -16,7 +16,7 @@ type NotificationCategory = 'Tout' | 'Réservation' | 'Achat' | 'Recharge' | 'Au
 const dummyNotifications = [
   { id: '1', title: 'Nouvelle réservation confirmée', message: 'Votre réservation pour le déjeuner de demain a été confirmée.', time: 'il y a 5 min', category: 'Réservation' as NotificationCategory },
   { id: '2', title: 'Solde bas', message: 'Votre solde est inférieur à FCFA 1000. Rechargez votre compte !', time: 'il y a 1 heure', category: 'Recharge' as NotificationCategory },
-  { id: '3', title: 'Mise à jour du menu', message: 'Le menu du dîner a été mis à jour pour cette semaine.', time: 'Hier', category: 'Autre' as NotificationCategory },
+  { id: '3', title: 'Mise à jour du menu', message: 'Le menu du DINER a été mis à jour pour cette semaine.', time: 'Hier', category: 'Autre' as NotificationCategory },
   { id: '4', title: 'Ticket utilisé', message: 'Un ticket a été utilisé pour le déjeuner le 20 mai.', time: 'il y a 2 jours', category: 'Achat' as NotificationCategory },
   { id: '5', title: 'Promotion spéciale !', message: 'Profitez de 10% de réduction sur votre prochaine recharge de 5000 FCFA ou plus.', time: 'il y a 3 jours', category: 'Recharge' as NotificationCategory },
   { id: '6', title: 'Rappel de réservation', message: 'N\'oubliez pas votre réservation de petit-déjeuner le 25 mai.', time: 'il y a 4 jours', category: 'Réservation' as NotificationCategory },

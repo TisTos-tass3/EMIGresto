@@ -7,7 +7,7 @@ from .personnel_serializer          import (
 )
 from .jour_serializer               import JourSerializer
 from .periode_serializer            import PeriodeSerializer
-from .reservation_serializer        import ReservationSerializer , ReservationCreateSerializer
+from .reservation_serializer        import ReservationSerializer 
 from .ticket_serializer             import TicketSerializer
 from .transaction_serializer        import TransactionSerializer
 from .paiement_serializer           import PaiementSerializer

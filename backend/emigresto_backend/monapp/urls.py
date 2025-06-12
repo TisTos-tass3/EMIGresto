@@ -1,49 +1,39 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import (
     auth_views, etudiant_views, jour_views, notification_views,
     paiement_views, personnel_views, recu_views,
     reservation_views, ticket_views, transaction_views,
-    utilisateur_views, recharge_views, periode_views
+    utilisateur_views, recharge_views, user_details_views, periode_views
 )
 
 router = DefaultRouter()
-viewsets = [
-    ('recharges',       recharge_views.RechargeViewSet),
-    ('periodes',        periode_views.PeriodeViewSet),
-    ('etudiants',       etudiant_views.EtudiantViewSet),
-    ('jours',           jour_views.JourViewSet),
-    ('reservations',    reservation_views.ReservationViewSet),
-    ('tickets',         ticket_views.TicketViewSet),
-    ('utilisateurs',    utilisateur_views.UtilisateurViewSet),
-    ('personnels',      personnel_views.ResponsableGuichetViewSet),
-    ('notifications',   notification_views.NotificationViewSet),
-    ('transactions',    transaction_views.TransactionViewSet),
-    ('recus',           recu_views.RecuTicketViewSet),
-    ('paiements',       paiement_views.PaiementViewSet),
-    #('authentifications', auth_views.RegisterView, 'authentification'),
-]
-
-for item in viewsets:
-    if len(item) == 2:
-        prefix, viewset = item
-        router.register(prefix, viewset)
-    else:
-        prefix, viewset, basename = item
-        router.register(prefix, viewset, basename=basename)
+router.register('recharges', recharge_views.RechargeViewSet)
+router.register('etudiants', etudiant_views.EtudiantViewSet)
+router.register('jours', jour_views.JourViewSet)
+router.register('periodes', periode_views.PeriodeViewSet)
+router.register('reservations', reservation_views.ReservationViewSet, basename='reservations')  # ✅ Correction ici
+router.register('tickets', ticket_views.TicketViewSet)
+router.register('utilisateurs', utilisateur_views.UtilisateurViewSet)
+router.register('personnels', personnel_views.ResponsableGuichetViewSet)
+router.register('notifications', notification_views.NotificationViewSet)
+router.register('transactions', transaction_views.TransactionViewSet)
+router.register('recus', recu_views.RecuTicketViewSet)
+router.register('paiements', paiement_views.PaiementViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
 
     # Auth custom
     path('api/auth/register/', auth_views.RegisterView.as_view(), name='auth-register'),
-    path('api/auth/logout/',   auth_views.LogoutView.as_view(),   name='auth-logout'),
+    path('api/auth/logout/', auth_views.LogoutView.as_view(), name='auth-logout'),
 
     # JWT endpoints
-    path('api/auth/token/',   auth_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/auth/me/', auth_views.MeView.as_view(), name='auth-me'),
-    path('api/auth/token/refresh/', auth_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/token/', auth_views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/token/refresh/', auth_views.CustomTokenRefreshView.as_view(), name='token_refresh'),
+
+    # User details endpoint
+    path('api/user-details/', user_details_views.UserDetailsAPIView.as_view(), name='user-details'),
 ]
 
