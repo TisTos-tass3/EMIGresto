@@ -15,7 +15,7 @@ class Reservation(models.Model):
     date        = models.DateField(default=timezone.now)
     heure       = models.TimeField(default=timezone.now)
     statut      = models.CharField(max_length=10, choices=STATUT_CHOICES, default='VALIDE')
-    etudiant    = models.ForeignKey(
+    etudiant    = models.ForeignKey(  
         Etudiant,
         on_delete=models.CASCADE,
         related_name='reservations_effectuees',
@@ -49,7 +49,7 @@ class Reservation(models.Model):
 
     def __str__(self):
         benef = self.reservant_pour or self.etudiant
-        return f"Resa#{self.id} pour {benef.matricule} le {self.jour.nom_jour} ({self.periode.nom_periode})"
+        return f"Resa#{self.id} pour {benef.matricule} le {self.jour.nomJour} ({self.periode.nomPeriode})"
 
     def creer(self):
         """Valide et enregistre une nouvelle réservation."""
@@ -87,6 +87,6 @@ class Reservation(models.Model):
         """Chaîne descriptive de la réservation."""
         return (
             f"Réservation #{self.id} — Bénéficiaire : {self.beneficiaire.matricule} | "
-            f"Jour : {self.jour.nom_jour} | Période : {self.periode.nom_periode} | "
+            f"Jour : {self.jour.nomJour} | Période : {self.periode.nomPeriode} | "
             f"Statut : {self.get_statut_display()}"
         )
