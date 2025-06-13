@@ -9,7 +9,7 @@ class Paiement(models.Model):
     date         = models.DateTimeField(default=timezone.now)
     montant      = models.DecimalField(max_digits=8, decimal_places=2)
     mode_paiement= models.CharField(max_length=6, choices=MODES)
-    tickets_issued = models.PositiveIntegerField(editable=False)
+    #tickets_issued = models.PositiveIntegerField(editable=False)
 
     """
     def effectuer_paiement(self):

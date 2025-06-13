@@ -16,7 +16,7 @@ class Reservation(models.Model):
     date        = models.DateField() # Changed default=timezone.now, date will be provided by user
     heure       = models.TimeField(default=timezone.now) # This might be dynamic based on period, or can be fixed
     statut      = models.CharField(max_length=10, choices=STATUT_CHOICES, default='VALIDE')
-    etudiant    = models.ForeignKey(
+    etudiant    = models.ForeignKey(  
         Etudiant,
         on_delete=models.CASCADE,
         related_name='reservations_effectuees',
@@ -57,6 +57,7 @@ class Reservation(models.Model):
         # based on how you access it in other parts of your code.
         # Based on periode.py, it's nomPeriode.
         return f"Réservation de {self.etudiant.get_full_name} pour {self.periode.nomPeriode} le {self.date}"
+
 
     # @TODO: Re-evaluate if this method is still needed or if serializer validation is enough
     def creer(self):
