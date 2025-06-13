@@ -44,9 +44,6 @@ INSTALLED_APPS = [
     "corsheaders",
     'django_extensions',
     'monapp',
-    'corsheaders',
-     'django_extensions',
-
 ]
 
 AUTH_USER_MODEL = 'monapp.Utilisateur'

@@ -3,85 +3,67 @@ import { Calendar } from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import { API } from '../../services/apiServices'
 
-const CalendarComponent = () => {
+export default function CalendarComponent() {
   const [reservations, setReservations] = useState([])
   const [periods, setPeriods] = useState({})
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [date, setDate] = useState(new Date())
   const [error, setError] = useState(null)
 
   useEffect(() => {
     API.reservation.list()
-      .then(res => {
-        setReservations(res.results)
-        setError(null)
-      })
+      .then(res => setReservations(res.results))
       .catch(() => setError("Impossible de charger les réservations."))
-
     API.periode.list()
       .then(res => {
-        const map = {}
-        res.results.forEach(p => { map[p.id] = p.nomPeriode })
-        setPeriods(map)
+        const m = {}
+        res.results.forEach(p => m[p.id] = p.nomPeriode)
+        setPeriods(m)
       })
-      .catch(err => console.error("Erreur périodes :", err))
+      .catch(console.error)
   }, [])
 
-  const handleDateChange = date => setSelectedDate(date)
-
   const daily = reservations.filter(r =>
-    new Date(r.date).toDateString() === selectedDate.toDateString()
+    new Date(r.date).toDateString() === date.toDateString()
   )
-
-  const byPeriod = daily.reduce((acc, r) => {
-    const pid = r.periode // ou r.periode_id selon le champ renvoyé
-    if (!acc[pid]) acc[pid] = []
-    acc[pid].push(r)
+  const byPeriod = daily.reduce((acc,r) => {
+    acc[r.periode] = (acc[r.periode]||[]).concat(r)
     return acc
   }, {})
 
   return (
-    <div className="p-4 bg-white rounded-md shadow-md">
-      <h2 className="text-xl font-semibold text-gray-800">
-        Calendrier des Réservations
-      </h2>
-      {error && (
-        <div className="text-red-500 my-4 p-2 border border-red-500 rounded">
-          {error}
-        </div>
-      )}
+    <div className="p-4 bg-white rounded shadow">
+      <h2 className="text-xl font-semibold mb-3">Calendrier des Réservations</h2>
+      {error && <div className="text-red-500 mb-3">{error}</div>}
+
       <Calendar
-        onChange={handleDateChange}
-        value={selectedDate}
-        tileClassName={({ date }) =>
-          reservations.some(r => new Date(r.date).toDateString() === date.toDateString())
+        onChange={setDate}
+        value={date}
+        tileClassName={({date:dt}) =>
+          reservations.some(r=>new Date(r.date).toDateString()===dt.toDateString())
             ? 'bg-green-200 hover:bg-green-300'
             : ''
         }
-        tileContent={({ date }) =>
-          reservations.some(r => new Date(r.date).toDateString() === date.toDateString()) ? (
-            <span className="text-sm text-green-700">📅</span>
-          ) : null
+        tileContent={({date:dt}) =>
+          reservations.some(r=>new Date(r.date).toDateString()===dt.toDateString())
+            ? <span className="text-green-700">📅</span>
+            : null
         }
       />
+
       <div className="mt-6">
-        <h3 className="text-lg font-semibold text-gray-800">
-          Réservations du {selectedDate.toLocaleDateString()}
+        <h3 className="font-semibold mb-2">
+          Réservations du {date.toLocaleDateString()}
         </h3>
-        {Object.keys(byPeriod).length > 0 ? (
-          Object.entries(byPeriod).map(([pid, items]) => (
-            <div key={pid} className="mb-4">
-              <h4 className="text-md font-semibold text-gray-800">
-                Période : {periods[pid] || 'Inconnue'}
-              </h4>
-              <p className="text-gray-600">Total : {items.length}</p>
-            </div>
-          ))
-        ) : (
-          <p>Aucune réservation pour cette date.</p>
-        )}
+        {Object.keys(byPeriod).length>0
+          ? Object.entries(byPeriod).map(([pid,list])=>(
+              <div key={pid} className="mb-4">
+                <h4 className="font-medium">Période : {periods[pid]}</h4>
+                <p>Total : {list.length}</p>
+              </div>
+            ))
+          : <p>Aucune réservation pour cette date.</p>
+        }
       </div>
     </div>
   )
 }
-
-export default CalendarComponent
