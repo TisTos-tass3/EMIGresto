@@ -42,9 +42,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
     'monapp',
-    'corsheaders',
-     'django_extensions',
-
 ]
 
 AUTH_USER_MODEL = 'monapp.Utilisateur'
