@@ -1,4 +1,3 @@
-// src/App.jsx
 import { toast } from 'react-hot-toast'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -13,13 +12,13 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import SellTicket from './pages/SellTicket'
 
-// Wrapper pour les routes privées avec layout
+// Layout commun pour les pages privées
 function PrivateLayout({ children, title, role }) {
   return (
-    <div className="h-screen flex w-full overflow-hidden">
+    <div className="h-screen flex">
       <Sidebar menuItems={menuItems} userOptions={userOptions} />
-      <div className="flex-1 flex flex-col h-screen">
-        <Header h_title={title} h_role={role} h_user="Utilisateur" />
+      <div className="flex-1 flex flex-col">
+        <Header h_title={title} h_user="Utilisateur" h_role={role} />
         <main className="flex-1 overflow-auto p-6 bg-gray-100">
           {children}
         </main>
@@ -28,11 +27,10 @@ function PrivateLayout({ children, title, role }) {
   )
 }
 
-// Composant pour routes privées
+// Route protégée
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
   const location = useLocation()
-
   if (loading) return null
   if (!user) {
     toast.info('Veuillez vous connecter')
@@ -41,7 +39,7 @@ function PrivateRoute({ children }) {
   return children
 }
 
-// Composant pour routes publiques
+// Route publique
 function PublicRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return null
@@ -57,63 +55,55 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* routes publiques */}
-          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          {/* Public */}
+          <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
 
-          {/* routes privées */}
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <PrivateLayout title="Tableau de bord" role="Administrateur">
-                  <Dashboard />
-                </PrivateLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/reservations"
-            element={
-              <PrivateRoute>
-                <PrivateLayout title="Réservations" role="Vendeur">
-                  <Reservation />
-                </PrivateLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/etudiants"
-            element={
-              <PrivateRoute>
-                <PrivateLayout title="Liste des étudiants" role="Administrateur">
-                  <StudentList />
-                </PrivateLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/sell"
-            element={
-              <PrivateRoute>
-                <PrivateLayout title="Vendre un ticket" role="Vendeur">
-                  <SellTicket />
-                </PrivateLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/history"
-            element={
-              <PrivateRoute>
-                <PrivateLayout title="Historique" role="Vendeur">
-                  <History />
-                </PrivateLayout>
-              </PrivateRoute>
-            }
-          />
+          {/* Privé */}
+          <Route path="/" element={
+            <PrivateRoute>
+              <PrivateLayout title="Tableau de bord" role="Guichet">
+                <Dashboard />
+              </PrivateLayout>
+            </PrivateRoute>
+          }/>
+          <Route path="/reservations" element={
+            <PrivateRoute>
+              <PrivateLayout title="Réservations" role="Guichet">
+                <Reservation />
+              </PrivateLayout>
+            </PrivateRoute>
+          }/>
+          <Route path="/profile_R" element={
+            <PrivateRoute>
+              <PrivateLayout title="profile" role="Guichet">
+                <Reservation />
+              </PrivateLayout>
+            </PrivateRoute>
+          }/>
+          <Route path="/etudiants" element={
+            <PrivateRoute>
+              <PrivateLayout title="Liste des étudiants" role="Guichet">
+                <StudentList />
+              </PrivateLayout>
+            </PrivateRoute>
+          }/>
+          <Route path="/sell" element={
+            <PrivateRoute>
+              <PrivateLayout title="Vendre un ticket" role="Vendeur">
+                <SellTicket />
+              </PrivateLayout>
+            </PrivateRoute>
+          }/>
+          <Route path="/history" element={
+            <PrivateRoute>
+              <PrivateLayout title="Historique" role="Vendeur">
+                <History />
+              </PrivateLayout>
+            </PrivateRoute>
+          }/>
 
-          {/* catch-all */}
+          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

@@ -1,16 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import Spinner from '../../components/Spinner';
-import { API } from '../../services/apiServices';
+import { useQuery } from '@tanstack/react-query'
+import React from 'react'
+import Spinner from '../../../../../frontend/emigresto-frontend/src/components/Spinner'
+import { API } from '../../services/apiServices'
 
 export default function StudentList() {
-  const { data, isLoading, isError } = useQuery(
-    ['etudiants'],
-    () => API.etudiant.list({ page_size: 1000 })
-  );
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['etudiants'],
+    queryFn: () => API.etudiant.list({ page_size: 1000 })
+  })
 
-  if (isLoading) return <Spinner />;
-  if (isError)  return <div className="text-red-600">Erreur de chargement.</div>;
+  if (isLoading) return <Spinner />
+  if (isError || !data) return <div className="text-red-600">Erreur de chargement.</div>
 
   return (
     <div className="bg-white shadow rounded overflow-auto">
@@ -41,5 +41,5 @@ export default function StudentList() {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
