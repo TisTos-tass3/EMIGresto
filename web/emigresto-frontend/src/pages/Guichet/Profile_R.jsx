@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "../../layout/Header";
-import { menuItems, userOptions } from "../../layout/Layout_R/SidebarData_R";
-import Profile from "../../layout/Profile";
-import Sidebar from "../../layout/Sidebar";
+import Header from "../../../../../frontend/emigresto-frontend/src/layout/Header";
+import { menuItems, userOptions } from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/SidebarData_R";
+import Profile from "../../../../../frontend/emigresto-frontend/src/layout/Profile";
+import Sidebar from "../../../../../frontend/emigresto-frontend/src/layout/Sidebar";
 
 const Profile_R = () => {
   const user = {

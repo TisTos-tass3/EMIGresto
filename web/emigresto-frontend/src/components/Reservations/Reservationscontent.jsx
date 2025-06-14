@@ -2,9 +2,9 @@
 import React from "react";
 import useReservationsData from "../../hooks/useReservationsData";
 import DataTable from "../../layout/DataTable";
-import CalendarComponent from "../../layout/Layout_R/CalendarComponent";
-import Pagination from "../../layout/Layout_R/Pagination";
-import SearchSortExport from "../../layout/Layout_R/SearchSortExport";
+import CalendarComponent from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/CalendarComponent";
+import Pagination from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/Pagination";
+import SearchSortExport from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/SearchSortExport";
 
 export default function ReservationsContent() {
   const {

@@ -1,9 +1,9 @@
 import jsPDF from "jspdf"
 import "jspdf-autotable"
 import React, { useEffect, useState } from "react"
-import Pagination from "../../layout/Layout_R/Pagination"
-import SearchSortExport from "../../layout/Layout_R/SearchSortExport"
-import Table from "../../layout/Layout_R/Table"
+import Pagination from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/Pagination"
+import SearchSortExport from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/SearchSortExport"
+import Table from "../../../../../frontend/emigresto-frontend/src/layout/Layout_R/Table"
 import { API } from "../../services/apiServices"
 
 export default function Reservation() {
