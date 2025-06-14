@@ -16,7 +16,7 @@ class Reservation(models.Model):
     date        = models.DateField() # Changed default=timezone.now, date will be provided by user
     heure       = models.TimeField(default=timezone.now) # This might be dynamic based on period, or can be fixed
     statut      = models.CharField(max_length=10, choices=STATUT_CHOICES, default='VALIDE')
-    etudiant    = models.ForeignKey(  
+    etudiant    = models.ForeignKey(
         Etudiant,
         on_delete=models.CASCADE,
         related_name='reservations_effectuees',

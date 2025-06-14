@@ -1,27 +1,38 @@
-# create_etudiants.py
-from django.utils import timezone
-from restoapp.models import Etudiant
+import os
+import sys
+import django
 
-etudiants_data = [
-    {"email": "alice@example.com", "nom": "Alice", "prenom": "Koumba", "matricule": "EM2023001", "genre": "F"},
-    {"email": "bob@example.com", "nom": "Bob", "prenom": "Issa", "matricule": "EM2023002", "genre": "M"},
-    {"email": "carine@example.com", "nom": "Carine", "prenom": "Zara", "matricule": "EM2023003", "genre": "F"},
-]
+# Ajoutez le chemin du projet au PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-for data in etudiants_data:
-    etu, created = Etudiant.objects.get_or_create(
-        email=data["email"],
-        defaults={
-            "nom": data["nom"],
-            "prenom": data["prenom"],
-            "matricule": data["matricule"],
-            "genre": data["genre"],
-            "date_joined": timezone.now(),
-        }
+# Configurez Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'emigresto_backend.settings')
+django.setup()
+
+from monapp.models import Utilisateur, Etudiant
+
+def create_etudiants():
+    count = 0
+
+    users_without_etudiant = Utilisateur.objects.filter(
+        role='ETUDIANT'
+    ).exclude(
+        id__in=Etudiant.objects.values_list('utilisateur_id', flat=True)
     )
-    if created:
-        etu.set_password("default1234")  # ⚠️ Change ce mot de passe plus tard
-        etu.save()
-        print(f"✅ Étudiant {etu.get_fullName} créé avec succès.")
-    else:
-        print(f"ℹ️ Étudiant {etu.get_fullName} existe déjà.")
+
+    for user in users_without_etudiant:
+        matricule = f"ETU{user.id:06d}"
+        # Utilisez l'ID de l'utilisateur comme clé primaire
+        etudiant = Etudiant(
+            utilisateur_id=user.id,  # Utilisez l'ID directement
+            matricule=matricule,
+            solde=0,
+            genre='M'
+        )
+        etudiant.save()
+        count += 1
+
+    print(f"Création de {count} profils étudiants")
+
+if __name__ == '__main__':
+    create_etudiants()
