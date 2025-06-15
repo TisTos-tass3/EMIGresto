@@ -1,8 +1,8 @@
 import React from 'react'
-import AlertComponent from '../../../../../frontend/emigresto-frontend/src/layout/Layout_R/AlertComponent'
-import CalendarComponent from '../../../../../frontend/emigresto-frontend/src/layout/Layout_R/CalendarComponent'
-import GraphComponent from '../../../../../frontend/emigresto-frontend/src/layout/Layout_R/GraphComponent'
-import HistoryComponent from '../../../../../frontend/emigresto-frontend/src/layout/Layout_R/HistoryComponent'
+import AlertComponent from '../../layout/Layout_R/AlertComponent'
+import CalendarComponent from '../../layout/Layout_R/CalendarComponent'
+import GraphComponent from '../../layout/Layout_R/GraphComponent'
+import HistoryComponent from '../../layout/Layout_R/HistoryComponent'
 
 export default function Dashboard() {
   return (

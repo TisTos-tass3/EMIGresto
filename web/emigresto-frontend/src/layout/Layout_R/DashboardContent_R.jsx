@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { API } from '../../services/apiServices'
+import { API } from '../../services/apiService'
 import CalendarComponent from './CalendarComponent'
 import GraphComponent from './GraphComponent'
 import HistoryComponent from './HistoryComponent'

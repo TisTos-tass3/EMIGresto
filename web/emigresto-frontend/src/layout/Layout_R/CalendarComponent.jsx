@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Calendar } from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
-import { API } from '../../services/apiServices'
+import { API } from '../../services/apiService'
 
 export default function CalendarComponent() {
   const [reservations, setReservations] = useState([])

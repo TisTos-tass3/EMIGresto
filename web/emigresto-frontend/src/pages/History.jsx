@@ -1,5 +1,5 @@
 // src/pages/History.jsx
-import SalesTable from '../components_og/SalesTable';
+import SalesTable from "../components/SalesTable";
 
 export default function History() {
   return (

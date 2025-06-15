@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import React from 'react'
-import Spinner from '../../../../../frontend/emigresto-frontend/src/components/Spinner'
-import { API } from '../../services/apiServices'
+import Spinner from '../../components/Spinner'
+import { API } from '../../services/apiService'
 
 export default function StudentList() {
   const { data, isLoading, isError } = useQuery({

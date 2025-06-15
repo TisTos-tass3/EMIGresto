@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { API } from '../../services/apiServices'
+import { API } from '../../services/apiService'
 
 export default function AlertComponent() {
   const [alerts, setAlerts] = useState([])

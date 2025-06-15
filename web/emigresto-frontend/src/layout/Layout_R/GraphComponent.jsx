@@ -4,7 +4,7 @@ import {
 } from 'chart.js'
 import React, { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
-import { API } from '../../services/apiServices'
+import { API } from '../../services/apiService'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
