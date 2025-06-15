@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
@@ -10,6 +11,15 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 =======
+=======
+// src/main.jsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+>>>>>>> parent of 58a43359 (Changement au front-end avec nouvelles fonctions)
 const queryClient = new QueryClient({
   defaultOptions: {
     // On fournit explicitement un objet mutations / queries
